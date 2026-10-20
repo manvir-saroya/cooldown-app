@@ -1,0 +1,13 @@
+{
+  "model": {
+    "id": "claude-opus-5-5",
+    "display_name": "Opus"
+  },
+  "rate_limits": {
+    "five_hour": null,
+    "seven_day": {
+      "used_percentage": null,
+      "resets_at": null
+    }
+  }
+}

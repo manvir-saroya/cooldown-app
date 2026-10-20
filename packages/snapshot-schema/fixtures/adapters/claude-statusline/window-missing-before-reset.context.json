@@ -1,0 +1,41 @@
+{
+  "now": "2026-10-10T12:00:00Z",
+  "account": "default",
+  "adapterVersion": "0.1.0",
+  "previous": [
+    {
+      "schemaVersion": 1,
+      "id": "claude:default:session_5h",
+      "provider": "claude",
+      "account": "default",
+      "window": "session_5h",
+      "unit": "percent",
+      "percentUsed": 7.5,
+      "resetsAt": "2026-10-10T16:30:00Z",
+      "observedAt": "2026-10-10T11:55:00Z",
+      "source": {
+        "kind": "official",
+        "adapter": "claude-statusline",
+        "adapterVersion": "0.1.0"
+      },
+      "status": "ok"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "claude:default:weekly",
+      "provider": "claude",
+      "account": "default",
+      "window": "weekly",
+      "unit": "percent",
+      "percentUsed": 41.2,
+      "resetsAt": "2026-10-14T09:00:00Z",
+      "observedAt": "2026-10-10T11:55:00Z",
+      "source": {
+        "kind": "official",
+        "adapter": "claude-statusline",
+        "adapterVersion": "0.1.0"
+      },
+      "status": "ok"
+    }
+  ]
+}

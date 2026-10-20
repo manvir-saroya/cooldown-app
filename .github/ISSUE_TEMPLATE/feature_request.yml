@@ -1,0 +1,61 @@
+name: Feature request
+description: Suggest an improvement or a new provider.
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the idea. Please read the project principles in CONTRIBUTING.md first. They are fixed rules: Cooldown is local-first, has no hosted service or account, never reads subscription logins, tokens or cookies, never calls private usage endpoints, keeps API keys on the device, and has no telemetry. Requests that need any of that cannot be accepted.
+  - type: dropdown
+    id: area
+    attributes:
+      label: What is this about?
+      options:
+        - A new provider (a new source of limits or balances)
+        - The Windows app
+        - The Android app or the widget
+        - Alerts and bells
+        - Pairing and syncing
+        - Documentation
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the situation, not the solution. "When X happens, I can not Y."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: provider
+    attributes:
+      label: For a new provider only - how can the numbers be read?
+      description: |
+        Link to the official or documented way to read the limit or balance (an API page, a documented command, a documented file). It must not need a subscription login, a browser cookie or a private endpoint. If you do not know, say so; that is useful to know too.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What have you tried, or what else could work?
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send
+      options:
+        - label: I searched the existing issues.
+          required: true
+        - label: This idea fits the project principles (no server, no account, no subscription logins or cookies, no telemetry).
+          required: true
+        - label: I might be able to help build or test this.
+          required: false

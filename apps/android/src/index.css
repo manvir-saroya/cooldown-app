@@ -1,0 +1,4 @@
+@import '@cooldown/ui/styles.css';
+
+/* The UI's classes live in the shared package, outside this app's folder: scan it explicitly. */
+@source '../../../packages/ui/src';

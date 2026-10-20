@@ -1,0 +1,36 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "codex:default:session_5h",
+    "provider": "codex",
+    "account": "default",
+    "window": "session_5h",
+    "unit": "percent",
+    "percentUsed": 51,
+    "resetsAt": "2026-10-10T14:10:00Z",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "scraped",
+      "adapter": "codex-app-server",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "codex:default:weekly",
+    "provider": "codex",
+    "account": "default",
+    "window": "weekly",
+    "unit": "percent",
+    "percentUsed": 38,
+    "resetsAt": "2026-10-15T08:00:00Z",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "scraped",
+      "adapter": "codex-app-server",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok"
+  }
+]

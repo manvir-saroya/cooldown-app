@@ -1,0 +1,10 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.cooldown_android" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#74CFEE</item>
+        <item name="colorOnPrimary">#0A2230</item>
+        <item name="android:colorBackground">#0F1722</item>
+        <item name="colorSurface">#0F1722</item>
+        <item name="colorOnBackground">#EAF1F6</item>
+        <item name="colorOnSurface">#EAF1F6</item>
+    </style>
+</resources>

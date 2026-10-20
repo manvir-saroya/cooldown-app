@@ -1,0 +1,321 @@
+name: Release
+
+# Builds the Windows installer and the Android APK from a version tag and puts them, with
+# SHA256SUMS.txt and release notes, in a DRAFT GitHub release. A person reviews the draft and
+# publishes it; nothing here ever publishes. How to cut a release: docs/releasing.md.
+#
+#   git tag v0.1.0 && git push origin v0.1.0     builds, then drafts the release for that tag
+#   Actions > Release > Run workflow             dry run: builds and packages everything and
+#                                                uploads it as workflow artifacts, but creates
+#                                                no release (the publish job only runs for tags)
+#
+# Third-party actions are pinned to commit SHAs (the version is in the comment); GitHub's own
+# actions/* are referenced by major version.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel a release half way, and never run two for the same tag.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  version:
+    name: Check the version
+    # Every declared version must agree, and a tag must be "v" plus that version.
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - id: check
+        run: node .github/scripts/check-version.mjs
+
+  windows:
+    name: Windows installer
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - run: npm ci
+      # beforeBuildCommand builds the release sidecar and the web bundle first.
+      - name: Build the installer
+        working-directory: apps/desktop
+        run: npx tauri build --bundles nsis
+
+      - name: Name the asset
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          $expected = "Cooldown_${env:VERSION}_x64-setup.exe"
+          $built = @(Get-ChildItem target/release/bundle/nsis -Filter *.exe)
+          if ($built.Count -ne 1) { throw "Expected one installer in target/release/bundle/nsis, found $($built.Count)" }
+          if ($built[0].Name -ne $expected) { Write-Host "Renaming $($built[0].Name) to $expected" }
+          New-Item -ItemType Directory -Path dist | Out-Null
+          Copy-Item $built[0].FullName (Join-Path dist $expected)
+          Get-ChildItem dist | Format-Table Name, Length
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: dist/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+  smoke:
+    name: Smoke test the installer
+    # The same check windows.yml runs: install silently, start the app, read its log, uninstall.
+    needs: windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-windows
+          path: installer
+      - name: Install, start, check the log, uninstall
+        run: ./.github/scripts/windows-smoke-test.ps1 -Installer (Get-ChildItem installer -Filter *.exe).FullName
+
+  android:
+    name: Android APK
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          targets: aarch64-linux-android
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      # The signing secrets reach only this step and the build step; the npm install and every
+      # step before them run without them.
+      - name: Restore the release keystore
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          set_count=0
+          for value in "$KEYSTORE_BASE64" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD"; do
+            if [ -n "$value" ]; then set_count=$((set_count + 1)); fi
+          done
+          if [ "$set_count" -eq 0 ]; then
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No Android signing secrets: the APK will be signed with a throwaway debug key (see docs/releasing.md)"
+            exit 0
+          fi
+          if [ "$set_count" -ne 4 ]; then
+            echo "::error::Only $set_count of the 4 Android signing secrets are set (ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD). Set all four or none."
+            exit 1
+          fi
+          keystore="$RUNNER_TEMP/cooldown-release.keystore"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$keystore"
+          chmod 600 "$keystore"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+          echo "path=$keystore" >> "$GITHUB_OUTPUT"
+
+      - run: npm ci
+      # The runner image ships the Android SDK and NDK; Tauri wants NDK_HOME. The release build is
+      # minified (R8) and not debuggable. gradle signs it from the ANDROID_KEY* variables below
+      # (apps/android/src-tauri/gen/android/app/build.gradle.kts), or with the debug key if unset.
+      - name: Build the APK
+        working-directory: apps/android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ steps.keystore.outputs.path }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ steps.keystore.outputs.signed == 'true' && secrets.ANDROID_KEYSTORE_PASSWORD || '' }}
+          ANDROID_KEY_ALIAS: ${{ steps.keystore.outputs.signed == 'true' && secrets.ANDROID_KEY_ALIAS || '' }}
+          ANDROID_KEY_PASSWORD: ${{ steps.keystore.outputs.signed == 'true' && secrets.ANDROID_KEY_PASSWORD || '' }}
+        run: |
+          export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          npx tauri android build --apk --target aarch64
+
+      - name: Check and name the APK
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          SIGNED: ${{ steps.keystore.outputs.signed }}
+        run: |
+          set -euo pipefail
+          mapfile -t apks < <(find apps/android/src-tauri/gen/android/app/build/outputs/apk -name '*.apk')
+          printf 'Built: %s\n' "${apks[@]}"
+          if [ "${#apks[@]}" -ne 1 ]; then echo "::error::Expected exactly one APK"; exit 1; fi
+          apk="${apks[0]}"
+          case "$apk" in *-unsigned.apk) echo "::error::The APK is unsigned"; exit 1;; esac
+
+          tools="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)"
+          # Signature: valid, and made by the key we meant to use.
+          "$tools/apksigner" verify --verbose --print-certs "$apk" | tee apksigner.txt
+          # "Signer #1 certificate ..." in older apksigner, "V2 Signer: certificate ..." in newer.
+          cert="$(sed -nE 's/^(Signer #1 |V[0-9.]+ Signer: )certificate SHA-256 digest: //p' apksigner.txt | sed -n 1p)"
+          if [ -z "$cert" ]; then echo "::error::Could not read the signing certificate"; exit 1; fi
+          if grep -q 'certificate DN: .*CN=Android Debug' apksigner.txt; then is_debug=true; else is_debug=false; fi
+          if [ "$SIGNED" = true ] && [ "$is_debug" = true ]; then
+            echo "::error::The release keystore was restored but the APK is debug-signed"; exit 1
+          fi
+          if [ "$SIGNED" != true ] && [ "$is_debug" != true ]; then
+            echo "::error::No release keystore, yet the APK is not debug-signed"; exit 1
+          fi
+          # Identity: right app, right version.
+          "$tools/aapt2" dump badging "$apk" | sed -n 1p | tee badging.txt
+          grep -q "versionName='$VERSION'" badging.txt || { echo "::error::versionName is not $VERSION"; exit 1; }
+          grep -q "name='app.cooldown.phone'" badging.txt || { echo "::error::Unexpected package name"; exit 1; }
+
+          if [ "$SIGNED" = true ]; then name="Cooldown_${VERSION}_android.apk"; else name="Cooldown_${VERSION}_android-debug-signed.apk"; fi
+          mkdir -p dist meta
+          cp "$apk" "dist/$name"
+          { echo "SIGNED=${SIGNED:-false}"; echo "CERT_SHA256=$cert"; } > meta/android-signing.env
+          ls -l dist; cat meta/android-signing.env
+
+      - name: Remove the keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/cooldown-release.keystore"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: dist/*.apk
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android-meta
+          path: meta/android-signing.env
+          if-no-files-found: error
+          retention-days: 30
+
+  package:
+    name: Checksums and release notes
+    # Needs the smoke test too: a release whose installer does not start is not packaged. Also the
+    # end of a dry run: the result is the `release-bundle` artifact (and the job summary).
+    needs: [version, windows, smoke, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: artifacts
+
+      - name: Checksums
+        run: |
+          set -euo pipefail
+          mkdir -p bundle/dist
+          cp artifacts/release-windows/*.exe artifacts/release-android/*.apk bundle/dist/
+          (cd bundle/dist && sha256sum -- * > SHA256SUMS.txt && cat SHA256SUMS.txt)
+
+      - name: Release notes
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          set -a
+          . artifacts/release-android-meta/android-signing.env
+          set +a
+          export WINDOWS_ASSET="$(cd bundle/dist && ls Cooldown_*_x64-setup.exe)"
+          export ANDROID_ASSET="$(cd bundle/dist && ls Cooldown_*_android*.apk)"
+          export CHECKSUMS_FILE=bundle/dist/SHA256SUMS.txt
+          export OUT=bundle/release-notes.md
+          node .github/scripts/render-release-notes.mjs
+          # The assets must be exactly the documented names.
+          [ "$WINDOWS_ASSET" = "Cooldown_${VERSION}_x64-setup.exe" ]
+          case "$ANDROID_ASSET" in "Cooldown_${VERSION}_android.apk"|"Cooldown_${VERSION}_android-debug-signed.apk") ;; *) echo "::error::Unexpected APK name $ANDROID_ASSET"; exit 1;; esac
+          {
+            if [ "$GITHUB_REF_TYPE" = tag ]; then
+              echo "## Draft release for $GITHUB_REF_NAME"
+            else
+              echo "## Dry run (no release is created)"
+            fi
+            echo
+            echo '```'
+            ls -l bundle/dist
+            echo '```'
+            echo
+            echo '### Release notes'
+            echo
+            cat bundle/release-notes.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: bundle
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Draft GitHub release
+    # The only job that can write to the repo, and it only runs for a tag. It runs no build and no
+    # repo code: it takes the packaged files and puts them in a draft. A person publishes it.
+    if: github.ref_type == 'tag'
+    needs: [version, package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-bundle
+          path: bundle
+      - name: Create or refresh the draft
+        run: |
+          set -euo pipefail
+          prerelease=()
+          case "$VERSION" in *-*) prerelease=(--prerelease);; esac
+
+          # Drafts have no tag URL yet, so look for a release with this tag in the full list.
+          id=""
+          state=""
+          read -r id state < <(gh api "repos/$GH_REPO/releases" --paginate \
+            | jq -r --arg tag "$TAG" '.[] | select(.tag_name == $tag) | "\(.id) \(if .draft then "draft" else "published" end)"' \
+            | head -n 1) || true
+
+          if [ "$state" = published ]; then
+            echo "::error::$TAG is already published. Not touching it. Delete that release or use a new tag."
+            exit 1
+          fi
+          if [ "$state" = draft ]; then
+            # A re-run: replace our own earlier draft (never a published release).
+            echo "Replacing the existing draft for $TAG (release $id)"
+            gh api -X DELETE "repos/$GH_REPO/releases/$id"
+          fi
+
+          gh release create "$TAG" bundle/dist/* \
+            --draft --verify-tag \
+            --title "Cooldown $TAG" \
+            --notes-file bundle/release-notes.md "${prerelease[@]}"
+          gh release view "$TAG" --json isDraft,url,assets --jq '{isDraft, url, assets: [.assets[].name]}' || echo "(created; gh cannot show a draft by tag)"

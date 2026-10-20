@@ -1,0 +1,38 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "codex:default:session_5h",
+    "provider": "codex",
+    "account": "default",
+    "window": "session_5h",
+    "unit": "percent",
+    "percentUsed": 51,
+    "resetsAt": "2026-10-10T14:10:00Z",
+    "observedAt": "2026-10-10T11:50:00Z",
+    "source": {
+      "kind": "scraped",
+      "adapter": "codex-app-server",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "degraded",
+    "note": "Codex app-server error: failed to fetch rate limits: not signed in with ChatGPT; showing the last known value"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "codex:default:weekly",
+    "provider": "codex",
+    "account": "default",
+    "window": "weekly",
+    "unit": "percent",
+    "percentUsed": 38,
+    "resetsAt": "2026-10-10T11:30:00Z",
+    "observedAt": "2026-10-10T11:00:00Z",
+    "source": {
+      "kind": "scraped",
+      "adapter": "codex-app-server",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "stale",
+    "note": "Codex app-server error: failed to fetch rate limits: not signed in with ChatGPT; the last known value is past its reset time"
+  }
+]

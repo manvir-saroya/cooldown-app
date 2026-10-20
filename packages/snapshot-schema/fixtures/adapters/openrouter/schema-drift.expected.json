@@ -1,0 +1,18 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "openrouter:default:balance",
+    "provider": "openrouter",
+    "account": "default",
+    "window": "balance",
+    "unit": "usd",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "openrouter",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "unavailable",
+    "note": "OpenRouter response did not match the expected shape"
+  }
+]

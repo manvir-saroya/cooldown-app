@@ -1,0 +1,19 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "xai:default:balance",
+    "provider": "xai",
+    "account": "default",
+    "window": "balance",
+    "unit": "usd",
+    "remaining": -1.5,
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "xai",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok",
+    "note": "Prepaid balance is negative (more spent than purchased)"
+  }
+]

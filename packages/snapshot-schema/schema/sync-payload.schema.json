@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 1
+    },
+    "deviceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+    },
+    "snapshots": {
+      "maxItems": 256,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "number",
+            "const": 1
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 32,
+            "pattern": "^[a-z0-9][a-z0-9_.-]{0,31}$"
+          },
+          "account": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[^@:\\u0000-\\u001f\\u007f]{1,64}$"
+          },
+          "window": {
+            "type": "string",
+            "enum": [
+              "session_5h",
+              "weekly",
+              "monthly",
+              "daily",
+              "balance"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "percent",
+              "usd",
+              "cny",
+              "tokens",
+              "requests"
+            ]
+          },
+          "percentUsed": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "used": {
+            "type": "number",
+            "minimum": 0
+          },
+          "limit": {
+            "type": "number",
+            "minimum": 0
+          },
+          "remaining": {
+            "type": "number"
+          },
+          "resetsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "observedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "official",
+                  "estimated",
+                  "scraped",
+                  "manual"
+                ]
+              },
+              "adapter": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "adapterVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32
+              }
+            },
+            "required": [
+              "kind",
+              "adapter",
+              "adapterVersion"
+            ],
+            "additionalProperties": false
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "stale",
+              "degraded",
+              "unavailable"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "id",
+          "provider",
+          "account",
+          "window",
+          "unit",
+          "observedAt",
+          "source",
+          "status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "alerts": {
+      "maxItems": 256,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^reset:[a-z0-9][a-z0-9_.-]{0,31}:[^@:\\u0000-\\u001f\\u007f]{1,64}:(?:session_5h|weekly|monthly|daily|balance)$"
+          },
+          "fireAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "fireAt",
+          "enabled"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "deviceId",
+    "generatedAt",
+    "snapshots",
+    "alerts"
+  ],
+  "additionalProperties": false,
+  "title": "Cooldown SyncPayload"
+}

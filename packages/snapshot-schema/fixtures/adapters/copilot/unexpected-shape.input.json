@@ -1,0 +1,12 @@
+{
+  "timePeriod": {
+    "year": 2026,
+    "month": 10
+  },
+  "usageItems": [
+    {
+      "product": "copilot",
+      "grossAmount": "6.40"
+    }
+  ]
+}

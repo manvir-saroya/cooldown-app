@@ -1,0 +1,60 @@
+name: Android
+
+# A debug APK (arm64) on every push to main, every pull request and by hand, as an artifact to
+# sideload for testing. Not for distribution: it is signed with a throwaway debug key. The APK that
+# people download is built by release.yml (v* tags), signed with the release key.
+#
+# Third-party actions are pinned to commit SHAs (the version is in the comment); GitHub's own
+# actions/* are referenced by major version.
+on:
+  push:
+    branches: [main]
+    # Docs-only changes do not need a build.
+    paths-ignore: ['docs/**', '**/*.md']
+  pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  apk:
+    name: Debug APK (arm64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          targets: aarch64-linux-android
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - run: npm ci
+      # The runner image ships the Android SDK and NDK; Tauri wants NDK_HOME.
+      - name: Build the APK
+        working-directory: apps/android
+        run: |
+          export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          npx tauri android build --debug --apk --target aarch64
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cooldown-android-debug-apk
+          path: apps/android/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+          retention-days: 30

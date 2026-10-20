@@ -1,0 +1,21 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "openrouter:default:balance",
+    "provider": "openrouter",
+    "account": "default",
+    "window": "balance",
+    "unit": "usd",
+    "percentUsed": 100,
+    "used": 10.35,
+    "limit": 10,
+    "remaining": -0.35,
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "openrouter",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok"
+  }
+]

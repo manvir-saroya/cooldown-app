@@ -1,0 +1,101 @@
+name: Bug report
+description: Something in Cooldown does not work the way it should.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report this. A good report gets fixed faster.
+
+        **Before you start**
+        - Look through Troubleshooting (docs/troubleshooting.md in this repository). Many problems are answered there.
+        - Search the existing issues.
+        - **Security problem?** (a way to pair a phone without confirmation, a key showing up where it should not, damage to someone's settings) Do not post it here. Follow SECURITY.md in this repository (Security tab, "Report a vulnerability").
+        - **Never paste** API keys, tokens, pairing codes or QR codes, or your Claude or Codex login files.
+  - type: dropdown
+    id: app
+    attributes:
+      label: Which app?
+      options:
+        - Windows desktop app
+        - Android app
+        - Both (for example pairing or syncing)
+        - Building from source
+        - Documentation
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Cooldown version
+      description: It is in the installer or APK file name, for example Cooldown_0.1.0_x64-setup.exe. On Windows it is also in the log file, on the line that starts "Cooldown 0.1.0 starting".
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: Your system
+      description: For Windows, say Windows 10 or 11. For Android, say the Android version and the phone model.
+      placeholder: "Windows 11 23H2   or   Android 15, Pixel 8"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: What is it about?
+      options:
+        - Claude Code numbers (the statusline hook)
+        - Codex numbers
+        - OpenRouter, DeepSeek or xAI balance
+        - Pairing or syncing with a phone
+        - Bells and notifications
+        - The installer, updating or uninstalling
+        - The screens or how they look
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Say what you saw. A screenshot helps. Cover anything personal first.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we see it ourselves?
+      description: Numbered steps, starting from opening Cooldown.
+      placeholder: |
+        1. Open Settings
+        2. Select Install hook
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log file (Windows)
+      description: |
+        Paste the useful part of `%LOCALAPPDATA%\app.cooldown.desktop\logs\cooldown.log`. Cooldown never writes API keys to it, but paths in it can include your Windows user name, so read it first and remove anything you do not want to share.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send
+      options:
+        - label: I searched the existing issues and Troubleshooting.
+          required: true
+        - label: This is not a security problem, and I removed all keys, tokens, pairing codes and personal details from this report.
+          required: true

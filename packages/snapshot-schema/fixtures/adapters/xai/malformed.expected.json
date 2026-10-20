@@ -1,0 +1,18 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "xai:default:balance",
+    "provider": "xai",
+    "account": "default",
+    "window": "balance",
+    "unit": "usd",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "xai",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "unavailable",
+    "note": "xAI response did not match the expected shape"
+  }
+]

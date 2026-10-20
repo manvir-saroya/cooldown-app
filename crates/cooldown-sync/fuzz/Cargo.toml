@@ -1,0 +1,73 @@
+[package]
+name = "cooldown-sync-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+serde_json = "1"
+cooldown-sync = { path = "..", default-features = false }
+cooldown-core = { path = "../../cooldown-core" }
+
+# Detach from the repository workspace (the standard cargo-fuzz layout).
+[workspace]
+
+[[bin]]
+name = "qr_decode"
+path = "fuzz_targets/qr_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "frame_decode"
+path = "fuzz_targets/frame_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "envelope_decode"
+path = "fuzz_targets/envelope_decode.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "client_hello"
+path = "fuzz_targets/client_hello.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "message_json"
+path = "fuzz_targets/message_json.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "handshake_read"
+path = "fuzz_targets/handshake_read.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "sync_payload"
+path = "fuzz_targets/sync_payload.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "beacon_decode"
+path = "fuzz_targets/beacon_decode.rs"
+test = false
+doc = false
+bench = false

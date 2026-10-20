@@ -1,0 +1,19 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "antigravity:default:weekly",
+    "provider": "antigravity",
+    "account": "default",
+    "window": "weekly",
+    "unit": "percent",
+    "observedAt": "2026-10-10T11:58:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "antigravity-statusline",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok",
+    "percentUsed": 6.22,
+    "resetsAt": "2026-10-13T07:50:32Z"
+  }
+]

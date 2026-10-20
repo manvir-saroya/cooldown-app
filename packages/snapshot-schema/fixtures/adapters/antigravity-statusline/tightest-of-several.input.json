@@ -1,0 +1,27 @@
+{
+  "cwd": "/home/example/project",
+  "conversation_id": "00000000-0000-4000-8000-000000000001",
+  "model": {
+    "id": "Gemini 3.5 Flash (High)",
+    "display_name": "Gemini 3.5 Flash (High)"
+  },
+  "context_window": {
+    "total_input_tokens": 88244,
+    "total_output_tokens": 61074,
+    "context_window_size": 1048576,
+    "used_percentage": 14.24
+  },
+  "quota": {
+    "gemini-weekly": {
+      "remaining_fraction": 0.9378,
+      "reset_time": "2026-10-13T07:50:32Z",
+      "reset_in_seconds": 243032
+    },
+    "gemini-pro-weekly": {
+      "remaining_fraction": 0.125,
+      "reset_time": "2026-10-14T00:00:00Z",
+      "reset_in_seconds": 302400
+    }
+  },
+  "agent_state": "idle"
+}

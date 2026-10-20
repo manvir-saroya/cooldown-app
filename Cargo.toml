@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = ["crates/*", "apps/desktop/src-tauri", "apps/android/src-tauri"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+rust-version = "1.88"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+time = { version = "0.3", features = ["serde", "formatting", "parsing", "macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "process", "io-util", "time", "sync", "fs"] }
+dirs = "6"
+tempfile = "3"

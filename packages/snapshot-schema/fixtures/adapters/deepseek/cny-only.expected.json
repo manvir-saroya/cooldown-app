@@ -1,0 +1,18 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "deepseek:default:balance",
+    "provider": "deepseek",
+    "account": "default",
+    "window": "balance",
+    "unit": "cny",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "deepseek",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok",
+    "remaining": 110
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "data": {
+    "label": "cooldown-test-key",
+    "limit": 10,
+    "limit_remaining": -0.35,
+    "limit_reset": null,
+    "include_byok_in_limit": false,
+    "usage": 10.35,
+    "usage_daily": 0,
+    "usage_weekly": 0,
+    "usage_monthly": 10.35,
+    "byok_usage": 0,
+    "byok_usage_daily": 0,
+    "byok_usage_weekly": 0,
+    "byok_usage_monthly": 0,
+    "is_free_tier": false,
+    "budgets": [],
+    "effective_budget": null,
+    "free_model_daily_requests": {
+      "used": 0,
+      "limit": 50,
+      "remaining": 50
+    }
+  }
+}

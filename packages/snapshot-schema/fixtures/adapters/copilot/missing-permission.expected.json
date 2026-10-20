@@ -1,0 +1,18 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "copilot:default:monthly",
+    "provider": "copilot",
+    "account": "default",
+    "window": "monthly",
+    "unit": "usd",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "copilot",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "unavailable",
+    "note": "GitHub request failed (HTTP 403). The token needs the Plan permission (read) on your personal account"
+  }
+]

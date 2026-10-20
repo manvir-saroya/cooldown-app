@@ -1,0 +1,68 @@
+[package]
+name = "cooldown-sync"
+description = "Cooldown pairing and sync: QR pairing payload, Noise (snow) handshakes, framing, trust and identity stores, PC server and phone client"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+default = ["keyring-store"]
+# The OS credential-store backed `IdentityStore` (Windows Credential Manager, macOS Keychain),
+# built on `keyring-core` plus the native store crates rather than the `keyring` v1 wrapper, because
+# the wrapper cannot set the Windows persistence level (see the README). Android builds use
+# `default-features = false` and supply a Keystore-wrapped `IdentityStore` from the Kotlin side.
+keyring-store = [
+    "dep:keyring-core",
+    "dep:windows-native-keyring-store",
+    "dep:apple-native-keyring-store",
+]
+
+[dependencies]
+cooldown-core = { path = "../cooldown-core" }
+
+# Noise. Pinned exactly: snow is not formally audited, so upgrades must be deliberate.
+# Only the primitives the two protocol names need are enabled (no AES-GCM, no SHA-2).
+snow = { version = "=0.10.0", default-features = false, features = [
+    "std",
+    "default-resolver",
+    "use-curve25519",
+    "use-chacha20poly1305",
+    "use-blake2",
+    "use-getrandom",
+] }
+blake2 = "0.10"
+# Same major as snow's, so it is a single copy in the tree. Used only to derive a public key from
+# a stored private key (X25519 base-point multiplication).
+curve25519-dalek = { version = "4.1.3", default-features = false }
+zeroize = "1"
+subtle = "2"
+getrandom = "0.3"
+base64 = "0.22"
+# Already in the tree (tokio's `net` feature depends on the same 0.6 line), so this adds no new
+# crate. Used only by `discovery` for what tokio and std do not expose: IP_MULTICAST_IF, so each
+# beacon leaves on a chosen interface instead of whichever one the routing table prefers.
+socket2 = "0.6"
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["net"] }
+tracing = "0.1"
+
+keyring-core = { version = "1", optional = true }
+
+[target.'cfg(windows)'.dependencies]
+windows-native-keyring-store = { version = "1.1", default-features = false, optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+apple-native-keyring-store = { version = "1", features = ["keychain"], optional = true }
+
+[dev-dependencies]
+# Examples only: print the crate's log events.
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt", "std"] }
+proptest = "1"
+keyring-core = "1"
+tempfile = { workspace = true }
+time = { workspace = true }

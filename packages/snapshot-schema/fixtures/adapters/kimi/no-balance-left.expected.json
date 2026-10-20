@@ -1,0 +1,19 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "kimi:default:balance",
+    "provider": "kimi",
+    "account": "default",
+    "window": "balance",
+    "unit": "usd",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "kimi",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok",
+    "remaining": -0.25,
+    "note": "Kimi reports no balance left for API calls"
+  }
+]

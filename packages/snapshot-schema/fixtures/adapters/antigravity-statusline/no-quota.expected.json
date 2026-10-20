@@ -1,0 +1,18 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "antigravity:default:weekly",
+    "provider": "antigravity",
+    "account": "default",
+    "window": "weekly",
+    "unit": "percent",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "antigravity-statusline",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "unavailable",
+    "note": "Antigravity CLI has not reported a weekly quota (it sends one once a session has started)"
+  }
+]

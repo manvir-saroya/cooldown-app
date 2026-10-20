@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. The colours are the app's own (packages/ui), so the widget setup
+         screen and the moment before the WebView appears do not flash Material purple. -->
+    <style name="Theme.cooldown_android" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#00658F</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:colorBackground">#EAF4FA</item>
+        <item name="colorSurface">#EAF4FA</item>
+        <item name="colorOnBackground">#14212B</item>
+        <item name="colorOnSurface">#14212B</item>
+    </style>
+</resources>

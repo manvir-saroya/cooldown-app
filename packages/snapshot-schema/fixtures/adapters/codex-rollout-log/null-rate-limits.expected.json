@@ -1,0 +1,34 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "codex:default:session_5h",
+    "provider": "codex",
+    "account": "default",
+    "window": "session_5h",
+    "unit": "percent",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "scraped",
+      "adapter": "codex-rollout-log",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "unavailable",
+    "note": "No Codex rate-limit data in the latest rollout event"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "codex:default:weekly",
+    "provider": "codex",
+    "account": "default",
+    "window": "weekly",
+    "unit": "percent",
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "scraped",
+      "adapter": "codex-rollout-log",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "unavailable",
+    "note": "No Codex rate-limit data in the latest rollout event"
+  }
+]

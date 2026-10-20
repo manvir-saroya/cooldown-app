@@ -1,0 +1,19 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "deepseek:default:balance",
+    "provider": "deepseek",
+    "account": "default",
+    "window": "balance",
+    "unit": "usd",
+    "remaining": 0,
+    "observedAt": "2026-10-10T12:00:00Z",
+    "source": {
+      "kind": "official",
+      "adapter": "deepseek",
+      "adapterVersion": "0.1.0"
+    },
+    "status": "ok",
+    "note": "DeepSeek reports the balance as too low for API calls"
+  }
+]

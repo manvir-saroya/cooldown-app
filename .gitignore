@@ -1,0 +1,22 @@
+node_modules/
+dist/
+target/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+/apps/desktop/src-tauri/gen/
+# The Android project under apps/android/src-tauri/gen/android is source (Kotlin, manifest);
+# its own .gitignore files keep build output out.
+/apps/android/src-tauri/gen/schemas/
+/apps/android/.gradle/
+/apps/android/build/
+coverage/
+playwright-report/
+test-results/
+/apps/desktop/src-tauri/binaries/*
+!/apps/desktop/src-tauri/binaries/.gitkeep
+/target-*/
+/.claude/
+/.impeccable/

@@ -1,0 +1,26 @@
+[package]
+name = "cooldown-statusline"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Claude Code statusLine hook that captures the official rate_limits data for Cooldown"
+publish = false
+
+[lib]
+name = "cooldown_statusline"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cooldown-statusline"
+path = "src/main.rs"
+
+[dependencies]
+dirs.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+time.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

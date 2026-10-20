@@ -1,0 +1,31 @@
+{
+  "changes": [
+    {
+      "teamId": "00000000-0000-4000-8000-0000000000aa",
+      "changeOrigin": "PURCHASE",
+      "topupStatus": "SUCCEEDED",
+      "amount": {
+        "val": "-5000"
+      },
+      "invoiceId": "FAKE-INVOICE-ID",
+      "invoiceNumber": "000-000-000-000",
+      "createTime": "2026-09-24T15:28:02.308840Z",
+      "paymentProcessor": {
+        "kind": "STRIPE"
+      }
+    },
+    {
+      "teamId": "00000000-0000-4000-8000-0000000000aa",
+      "changeOrigin": "SPEND",
+      "amount": {
+        "val": "2500"
+      },
+      "createTime": "2026-10-01T00:00:00.000000Z",
+      "spendBpKeyYear": 2026,
+      "spendBpKeyMonth": 9
+    }
+  ],
+  "total": {
+    "val": "-2500"
+  }
+}

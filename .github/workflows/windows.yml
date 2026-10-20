@@ -1,0 +1,100 @@
+name: Windows
+
+# Third-party actions are pinned to commit SHAs (the version is in the comment); GitHub's own
+# actions/* are referenced by major version.
+#
+# Tests, the unsigned Windows installer and a smoke test of that installer, on every push to main,
+# every pull request and by hand. Releases are not made here: see release.yml (v* tags).
+on:
+  push:
+    branches: [main]
+    # Docs-only changes do not need a build.
+    paths-ignore: ['docs/**', '**/*.md']
+  pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Tests (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - run: npm ci
+      - name: TypeScript (typecheck and tests)
+        run: |
+          npm run typecheck
+          npm test
+
+      # The desktop crate's build script needs the statusline sidecar to exist.
+      - name: Statusline sidecar
+        run: node apps/desktop/scripts/build-sidecar.mjs --debug
+      - name: Rust tests
+        # Report every failing test binary, not just the first.
+        run: cargo test --workspace --no-fail-fast
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Formatting
+        run: cargo fmt --all -- --check
+
+  installer:
+    name: Installer (unsigned NSIS)
+    # Deliberately not gated on the tests: during the first Windows round a build to try is useful
+    # even when a Windows-only test fails.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+
+      - run: npm ci
+      # beforeBuildCommand builds the release sidecar and the web bundle first.
+      - name: Build the installer
+        working-directory: apps/desktop
+        run: npx tauri build --bundles nsis
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cooldown-windows-installer
+          path: target/release/bundle/nsis/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+  smoke:
+    name: Smoke test (install, start, uninstall)
+    # Installs the installer built above on a clean runner, starts the installed app hidden and
+    # checks its log file. The build job proves the installer builds; this proves the app starts.
+    needs: installer
+    runs-on: windows-latest
+    steps:
+      # For the script and tauri.conf.json (names and version); nothing is built here.
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: cooldown-windows-installer
+          path: installer
+      - name: Install, start, check the log, uninstall
+        run: ./.github/scripts/windows-smoke-test.ps1 -Installer (Get-ChildItem installer -Filter *.exe).FullName

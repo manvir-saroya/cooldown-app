@@ -1,0 +1,15 @@
+{
+  "cwd": "/home/example/project",
+  "conversation_id": "00000000-0000-4000-8000-000000000001",
+  "model": {
+    "id": "Gemini 3.5 Flash (High)",
+    "display_name": "Gemini 3.5 Flash (High)"
+  },
+  "context_window": {
+    "total_input_tokens": 88244,
+    "total_output_tokens": 61074,
+    "context_window_size": 1048576,
+    "used_percentage": 14.24
+  },
+  "agent_state": "idle"
+}

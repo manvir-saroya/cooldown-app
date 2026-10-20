@@ -1,0 +1,22 @@
+# Gitleaks configuration (picked up automatically from the repository root).
+#
+# Start from the default rules, then allow exactly two fake JWTs that the redaction tests use as
+# fixtures (crates/cooldown-adapters/src/scrub.rs and crates/cooldown-sync/src/sanitize.rs). They
+# decode to {"alg":"HS256"} and {"sub":"1234"} / {"sub":"1234567890"} with filler signatures, so
+# they are not credentials.
+#
+# These are matched by their text, not by file path or commit. A `.gitleaksignore` fingerprint is
+# `<commit>:<file>:<rule>:<line>` in a history scan, so it breaks when history is rewritten and
+# when files are renamed, and the first commit that added these lines still has the project's old
+# file paths. An exact-string allowlist works for `gitleaks git` and `gitleaks dir` alike, and any
+# other token in those files is still reported.
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Fake JWT fixtures in the redaction tests (not real credentials)"
+regexes = [
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0In0\.c2lnbmF0dXJlLXNpZ25hdHVyZS1zaWduYXR1cmU''',
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0\.dBjftJeZ4CVPmB92K27uhbUJU1p1r''',
+]
