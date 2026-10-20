@@ -1,4 +1,4 @@
-**Cooldown {{VERSION}}** shows how much of your AI usage limits you have used (Claude Code, Codex) and your API balances (OpenRouter, DeepSeek, xAI), says exactly when they reset, and rings on your PC and your phone the moment you can work again.
+**Cooldown {{VERSION}}** shows how much of your AI usage limits you have used (Claude Code, Codex, Antigravity CLI, GitHub Copilot) and your API balances (OpenRouter, DeepSeek, xAI, Kimi), says exactly when they reset, and rings on your PC and your phone the moment you can work again.
 
 It runs on your own devices: no account, no hosted service, no server of ours. The phone pairs with the PC by QR code over your own network.
 
@@ -15,8 +15,8 @@ It runs on your own devices: no account, no hosted service, no server of ours. T
 ## Install on Windows
 
 1. Download `{{WINDOWS_ASSET}}` and double-click it. It installs for your user only, so it asks for no administrator rights.
-2. Windows SmartScreen shows **"Windows protected your PC"** because the installer is not signed with a code-signing certificate yet. Click **More info**, then **Run anyway**.
-3. Cooldown starts in the system tray (a bell icon; it may sit under the `^` arrow). In **Settings**, press **Install hook** to read Claude Code's limits, and paste an API key if you use OpenRouter, DeepSeek or xAI.
+2. Windows SmartScreen shows **"Windows protected your PC"** because the installer is not signed with a code-signing certificate yet. Click **More info**, then **Run anyway**. On a PC with **Smart App Control** switched on, Windows blocks unsigned apps with no way to run them; see docs/install-windows.md in the repository.
+3. Cooldown starts in the system tray (a bell icon; it may sit under the `^` arrow). In **Settings**, press **Install hook** to read Claude Code's limits, choose which agents to show under **Agents and sources**, and paste an API key or token for the ones that need one. Notifications for "running low", "ran out" and "limit is back" are on by default.
 
 If something goes wrong, the log is at `%LOCALAPPDATA%\app.cooldown.desktop\logs\cooldown.log`.
 
