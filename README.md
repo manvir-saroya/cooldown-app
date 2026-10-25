@@ -143,10 +143,12 @@ The data contract in `packages/snapshot-schema` is shared by the Rust and TypeSc
 
 Found a vulnerability? Please report it privately; see [SECURITY.md](SECURITY.md). Do not open a public issue for it.
 
-## Credits and license
+## License
+
+Cooldown is MIT licensed; see [LICENSE](LICENSE).
+
+## Acknowledgements
 
 Cooldown reuses ideas and code from other open-source projects; each one is credited, with its license, in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Cooldown was built with [Claude](https://www.anthropic.com/claude), Anthropic's AI model, through [Claude Code](https://claude.com/claude-code). Claude wrote much of the code, tests and docs alongside the maintainer.
-
-Cooldown is MIT licensed; see [LICENSE](LICENSE).
