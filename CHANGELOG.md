@@ -2,6 +2,13 @@
 
 All notable changes to Cooldown. Dates are UTC.
 
+## 0.1.1 — a livelier overview
+
+- **Next reset** now leads the overview as a large countdown whose digits roll into place, over a band of water that rises as the limit comes back.
+- **Pace marker:** each limit's meter marks where an even spend across the window would be by now, and says whether you have some in reserve or are ahead of it.
+- Providers are easier to tell apart: colour-tinted monograms and a faint tint on each panel. Panels lift slightly under the pointer and fade in one after another.
+- All of the new movement stands still when Windows or Android asks for reduced motion.
+
 ## 0.1.0 — first public release
 
 ### What Cooldown does

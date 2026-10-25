@@ -1,7 +1,7 @@
 {
   "name": "cooldown",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local-first dashboard for AI usage limits, reset times and \"your limit is back\" alerts.",
   "license": "MIT",
   "workspaces": [

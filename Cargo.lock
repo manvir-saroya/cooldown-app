@@ -773,7 +773,7 @@ dependencies = [
 
 [[package]]
 name = "cooldown-adapters"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "cooldown-core",
@@ -791,7 +791,7 @@ dependencies = [
 
 [[package]]
 name = "cooldown-android"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "base64 0.22.1",
  "cooldown-core",
@@ -810,7 +810,7 @@ dependencies = [
 
 [[package]]
 name = "cooldown-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-trait",
  "rusqlite",
@@ -824,7 +824,7 @@ dependencies = [
 
 [[package]]
 name = "cooldown-desktop"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "apple-native-keyring-store",
  "async-trait",
@@ -851,7 +851,7 @@ dependencies = [
 
 [[package]]
 name = "cooldown-statusline"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "dirs 6.0.0",
  "serde",
@@ -863,7 +863,7 @@ dependencies = [
 
 [[package]]
 name = "cooldown-sync"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "apple-native-keyring-store",
  "base64 0.22.1",
