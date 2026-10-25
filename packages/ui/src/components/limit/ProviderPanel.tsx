@@ -7,7 +7,7 @@
  */
 import { Bell, BellRing, CircleCheck, CircleOff, Clock, Hourglass, TriangleAlert } from 'lucide-react'
 import * as m from 'motion/react-m'
-import { memo } from 'react'
+import { memo, type CSSProperties } from 'react'
 import type { Snapshot, Status } from '@cooldown/snapshot-schema'
 import { Button } from '@/components/ui/button'
 import { providerInfo, windowTitle } from '@/lib/providers'
@@ -22,6 +22,7 @@ import {
   providerVerdict,
   SEVERITY,
   windowLabel,
+  windowPace,
   type Verdict,
 } from '@/lib/snapshot-view'
 import { cn } from '@/lib/utils'
@@ -78,8 +79,10 @@ export const ProviderPanel = memo(function ProviderPanel({
     <article
       aria-labelledby={headingId}
       data-verdict={verdict.kind}
+      data-neutral={info.hue === null ? '' : undefined}
+      style={info.hue === null ? undefined : ({ '--mark-h': info.hue } as CSSProperties)}
       className={cn(
-        'flex flex-col rounded-xl border bg-card text-card-foreground',
+        'plate-lift provider-wash flex flex-col rounded-xl border bg-card text-card-foreground',
         verdict.kind === 'blocked' && 'border-shoal/50',
       )}
     >
@@ -196,6 +199,7 @@ function WindowRow({ snapshot, providerName }: { snapshot: Snapshot; providerNam
   const rang = useNowSelector((now) => bellAt !== undefined && bellAt <= now)
   const certainty: Certainty =
     status === 'unavailable' ? 'unavailable' : status !== 'ok' || snapshot.source.kind === 'estimated' ? 'approximate' : 'measured'
+  const pace = useNowSelector((now) => (full || certainty === 'unavailable' ? undefined : windowPace(snapshot, now)), shallowEqual)
 
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-2 px-4 py-3 [grid-template-areas:'label_figure_bell'_'meter_meter_meter'] sm:grid-cols-[7.5rem_minmax(0,1fr)_4rem_auto] sm:px-5 sm:[grid-template-areas:'label_meter_figure_bell']">
@@ -230,11 +234,13 @@ function WindowRow({ snapshot, providerName }: { snapshot: Snapshot; providerNam
             certainty={certainty}
             label={`${providerName} ${title}, used`}
             showScale={false}
+            pace={pace?.elapsed}
             className="[&_[data-slot=progress]]:h-2.5"
           />
         ) : (
-          <div aria-hidden="true" className="h-2.5 rounded-sm border border-dashed border-border" />
+          <div aria-hidden="true" className="h-2.5 rounded-full border border-dashed border-border" />
         )}
+        {pace && <PaceLine pace={pace} />}
       </div>
 
       <p className="num text-right [grid-area:figure]">
@@ -252,6 +258,19 @@ function WindowRow({ snapshot, providerName }: { snapshot: Snapshot; providerNam
         <BellToggle snapshot={snapshot} label={`${providerName} ${title.toLowerCase()}`} />
       </div>
     </li>
+  )
+}
+
+/** Used against an even spend over the window; the meter's marker is the even point. */
+function PaceLine({ pace }: { pace: { elapsed: number; delta: number } }) {
+  const even = Math.abs(pace.delta) < 5
+  return (
+    <p
+      title={`The marker shows where an even spend would be by now: ${pace.elapsed}% of the window has passed.`}
+      className={cn('num mt-1.5 text-xs', even ? 'text-muted-foreground' : pace.delta < 0 ? 'text-tide-ink' : 'text-sand-ink')}
+    >
+      {even ? 'On an even pace' : pace.delta < 0 ? `${-pace.delta}% in reserve vs. an even pace` : `${pace.delta}% ahead of an even pace`}
+    </p>
   )
 }
 
@@ -298,7 +317,12 @@ export const BalanceTile = memo(function BalanceTile({ snapshot }: { snapshot: S
   const percent = percentUsed(snapshot)
   const headingId = `balance-${snapshot.id}`.replace(/[^a-z0-9-]/gi, '-')
   return (
-    <article aria-labelledby={headingId} className="relative flex h-full flex-col gap-3 rounded-xl border bg-card p-4 hover:border-primary/50">
+    <article
+      aria-labelledby={headingId}
+      data-neutral={info.hue === null ? '' : undefined}
+      style={info.hue === null ? undefined : ({ '--mark-h': info.hue } as CSSProperties)}
+      className="plate-lift provider-wash relative flex h-full flex-col gap-3 rounded-xl border bg-card p-4 hover:border-primary/50"
+    >
       <header className="flex items-center gap-3">
         <ProviderMark provider={snapshot.provider} className="size-8 text-xs" />
         <div className="min-w-0 flex-1">

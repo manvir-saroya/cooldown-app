@@ -89,7 +89,7 @@ It is an Operate surface: calm, dense enough to scan nine limits at once, and ho
 
 **Key Characteristics:**
 - One grotesque, tabular numerals everywhere a number can change.
-- Plates (bordered white panels), not shadows, for elevation.
+- Plates (bordered white panels), not shadows, for elevation; a plate lifts slightly under the pointer.
 - A graduated "tide staff" meter with ticks every 10 percent.
 - Dark theme is a night chart, not an inverted light theme.
 
@@ -135,16 +135,25 @@ Mobile first at 390px: one column of plates, a thumb-reach bottom navigation, 16
 
 ## Elevation & Depth
 
-Flat. Depth comes from 1px hairline borders on plates and a tonal step between ground, sidebar and plate. There are no drop shadows. Overlays (dialogs, menus) use a scrim and the popover surface.
+Flat at rest. Depth comes from 1px hairline borders on plates and a tonal step between ground, sidebar and plate. A plate under the pointer lifts 2px with a soft shadow (`.plate-lift`); nothing has a shadow at rest. Overlays (dialogs, menus) use a scrim and the popover surface.
 
 ### Named Rules
-**The One Edge Rule.** A surface has either a border or a shadow, never both.
+**The One Edge Rule.** At rest a surface has either a border or a shadow, never both. The hover lift is the one exception.
 
 ## Shapes
 
 Plates use a 14px radius, controls 8 to 10px, and the meter and badges 4 to 8px, so the staff reads as a ruler rather than a pill. Provider marks are neutral rounded-square monograms, not brand logos.
 
 ## Components
+
+### Tide hero (overview, added 2026-10-25)
+The soonest reset leads the overview as a large rolling countdown over a band of water. The water's height is the share of the window that has passed, so it is full when the limit comes back. Two wave layers drift sideways and a live dot pulses; both stand still under reduced motion. Digits that change slide in, and each one is plain text, so the timer reads, copies and searches normally.
+
+### Pace marker
+A row meter can carry a thin marker at the share of the window that has passed: the point an even spend would have reached by now. Under the meter one line says "N% in reserve", "on an even pace" or "N% ahead of an even pace" (tide ink, quiet, ochre). Idea from CodexBar's even-use guide (https://github.com/steipete/CodexBar). Hidden when the limit is reached or the reading is unavailable.
+
+### Provider hue
+A provider's hue (`--mark-h`) tints its monogram as a gradient tile and lays a faint wash in the top-left corner of its panel and balance tile. It tells providers apart; it never carries status.
 
 ### Limit plate
 Provider mark, name and window, a source badge, one line of provenance or a tinted problem notice, the reading, the reset countdown, the tide staff, a status badge with the observed age, and the bell button. The title is a stretched link to the provider detail; the bell sits above it.

@@ -32,8 +32,8 @@ function Progress({
         <m.div
           data-slot="progress-indicator"
           className={cn("absolute inset-0 bg-primary", indicatorClassName)}
-          initial={{ clipPath: "inset(0 100% 0 0)" }}
-          animate={{ clipPath: `inset(0 ${100 - clamped}% 0 0)` }}
+          initial={{ clipPath: "inset(0 100% 0 0 round 9999px)" }}
+          animate={{ clipPath: `inset(0 ${100 - clamped}% 0 0 round 9999px)` }}
           transition={{ type: "spring", duration: 0.7, bounce: 0 }}
         />
       </ProgressPrimitive.Indicator>

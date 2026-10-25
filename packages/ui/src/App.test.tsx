@@ -110,7 +110,8 @@ describe('Agents and sources', () => {
     const toggle = await screen.findByRole('switch', { name: 'Show Codex app-server on the dashboard' })
     expect(toggle).toBeChecked()
     await user.click(toggle)
-    expect(toggle).not.toBeChecked()
+    // The switch follows the source once the change is saved and the list is read again.
+    await waitFor(() => expect(toggle).not.toBeChecked())
     expect((await source.getSnapshots()).some((s) => s.provider === 'codex')).toBe(false)
 
     location.hash = '#/'

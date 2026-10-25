@@ -182,6 +182,20 @@ export function windowLengthMs(window: WindowKind): number | undefined {
   }
 }
 
+/**
+ * How a window's use compares with spending it evenly: `elapsed` is the percent of the window that has
+ * passed, `delta` is percent used minus that (positive means faster than even). Whole percents, so a
+ * selector built on it changes about once a minute. Undefined without a fixed window or a reset time.
+ */
+export function windowPace(snapshot: Snapshot, now: number): { elapsed: number; delta: number } | undefined {
+  const length = windowLengthMs(snapshot.window)
+  const resetsAt = parseTime(snapshot.resetsAt)
+  const percent = percentUsed(snapshot)
+  if (length === undefined || resetsAt === undefined || percent === undefined || resetsAt <= now) return undefined
+  const elapsed = Math.round(clampPercent(100 - ((resetsAt - now) / length) * 100))
+  return { elapsed, delta: Math.round(percent) - elapsed }
+}
+
 /** The history section's heading. Known from the snapshot, so it stays the same while the chart loads. */
 export function historyTitle(snapshot: Snapshot): string {
   return snapshot.window === 'balance' || isMoneyUnit(snapshot.unit) ? 'Balance history' : 'Usage history'

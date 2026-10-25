@@ -16,6 +16,7 @@ import {
   percentUsed,
   providerVerdict,
   sortSnapshots,
+  windowPace,
 } from './snapshot-view'
 
 const NOW = Date.parse('2026-10-10T12:00:00Z')
@@ -202,5 +203,19 @@ describe('groupForOverview', () => {
       ['codex:personal', ['weekly']],
     ])
     expect(balances).toEqual([balance])
+  })
+})
+describe('windowPace', () => {
+  it('compares use with an even spend over the window', () => {
+    // A 5-hour window resetting in 1 hour is 80% through; 50% used is 30 points in reserve.
+    expect(windowPace(snap(), NOW)).toEqual({ elapsed: 80, delta: -30 })
+    expect(windowPace(snap({ percentUsed: 95 }), NOW)).toEqual({ elapsed: 80, delta: 15 })
+  })
+
+  it('has nothing to say without a fixed window, a reset time or a reading, or once the reset passed', () => {
+    expect(windowPace(snap({ window: 'balance' }), NOW)).toBeUndefined()
+    expect(windowPace(snap({ resetsAt: undefined }), NOW)).toBeUndefined()
+    expect(windowPace(snap({ percentUsed: undefined }), NOW)).toBeUndefined()
+    expect(windowPace(snap({ resetsAt: new Date(NOW - MIN).toISOString() }), NOW)).toBeUndefined()
   })
 })

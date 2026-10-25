@@ -1,14 +1,19 @@
+import * as m from 'motion/react-m'
 import { useMemo } from 'react'
-import type { Snapshot } from '@cooldown/snapshot-schema'
-import { Countdown } from '@/components/limit/atoms'
-import { BellButton } from '@/components/limit/BellButton'
 import { BalanceTile, ProviderPanel } from '@/components/limit/ProviderPanel'
+import { TideHero } from '@/components/limit/TideHero'
 import { NoReadingsYet, PcStatusNote } from '@/components/phone/pc'
 import { ErrorState, LoadingCards } from '@/components/ScreenStates'
 import { useSnapshotSource, useSnapshots } from '@/data/SnapshotSource'
-import { providerInfo, windowTitle } from '@/lib/providers'
-import { formatClock, groupForOverview, nextReset, parseTime, percentUsed } from '@/lib/snapshot-view'
-import { useNowSelector, useToday } from '@/state/now'
+import { groupForOverview, nextReset } from '@/lib/snapshot-view'
+import { useNowSelector } from '@/state/now'
+
+/** Panels rise in one after another on first paint; reduced motion turns this into nothing. */
+const rise = (i: number) => ({
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { type: 'spring' as const, duration: 0.5, bounce: 0, delay: Math.min(i, 8) * 0.06 },
+})
 
 export function OverviewScreen() {
   const { data, loading, error, reload } = useSnapshots()
@@ -34,14 +39,14 @@ export function OverviewScreen() {
   return (
     <div className="flex flex-col gap-6">
       {onPhone && <PcStatusNote />}
-      {next && <NextBell snapshot={next} />}
+      {next && <TideHero snapshot={next} />}
       {groups.limits.length > 0 && (
         <section aria-label="Limits">
           <ul className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
-            {groups.limits.map((g) => (
-              <li key={g.key}>
+            {groups.limits.map((g, i) => (
+              <m.li key={g.key} {...rise(i)}>
                 <ProviderPanel provider={g.provider} account={g.account} windows={g.windows} />
-              </li>
+              </m.li>
             ))}
           </ul>
         </section>
@@ -52,10 +57,10 @@ export function OverviewScreen() {
             Balances
           </h2>
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {groups.balances.map((s) => (
-              <li key={s.id}>
+            {groups.balances.map((s, i) => (
+              <m.li key={s.id} {...rise(groups.limits.length + i)}>
                 <BalanceTile snapshot={s} />
-              </li>
+              </m.li>
             ))}
           </ul>
         </section>
@@ -66,35 +71,5 @@ export function OverviewScreen() {
         </p>
       )}
     </div>
-  )
-}
-
-/** The soonest reset across all limits, with its own bell. The one place the page leads with time. */
-function NextBell({ snapshot }: { snapshot: Snapshot }) {
-  const today = useToday()
-  const resetsAt = parseTime(snapshot.resetsAt)
-  if (resetsAt === undefined) return null
-  const name = `${providerInfo(snapshot.provider).name} ${windowTitle(snapshot.provider, snapshot.window).toLowerCase()}`
-  const percent = percentUsed(snapshot)
-  // "Back" only fits a limit that is used up; anything else simply resets.
-  const verb = percent !== undefined && percent >= 100 ? 'is back in' : 'resets in'
-  return (
-    <section
-      aria-label="Next reset"
-      className="flex flex-col gap-4 rounded-xl border border-tide/30 bg-tide-soft p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
-    >
-      <div className="min-w-0">
-        <h2 className="text-xl leading-snug font-semibold text-foreground">
-          {name} {verb} <Countdown target={resetsAt} className="text-2xl" />
-        </h2>
-        <p className="num mt-1 text-sm text-muted-foreground">
-          Next reset, at {formatClock(resetsAt, today)}
-          {percent !== undefined && percent >= 100 ? '. The limit is reached now.' : percent !== undefined ? `. ${Math.round(percent)}% used.` : '.'}
-        </p>
-      </div>
-      <div className="sm:w-72 sm:shrink-0">
-        <BellButton snapshot={snapshot} />
-      </div>
-    </section>
   )
 }
